@@ -33,7 +33,7 @@ export default {
     name: 'EditSmoothie',
     data(){
        return {
-           slug: this.$route.params.smoothie_slug,
+           slug: this.$route.params.smoothie_name,
            smoothie: null,
            ingredient: null,
            feedback: null
@@ -49,13 +49,17 @@ export default {
                     remove: /[$*_+~.()'"!\-:@]/g,
                     lower: true
                 })
-                db.collection('smoothies').doc(this.smoothie.id).update({
-                    title: this.smoothie.title,
-                    ingredients: this.smoothie.ingredients,
-                    slug: this.smoothie.slug 
-                }).then(() => {
-                    this.$router.push({ name: 'Index' })
-                }).catch(err => console.log(err))
+                fetch(`http://localhost:5000/api/v1/smoothies/edit/${this.smoothie.id}`, {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: this.smoothie.title,
+                        ingredients: this.smoothie.ingredients
+                    })
+                }).then(() => this.$router.push({name: 'Index'}))
             }else {
                 this.feedback = "You must enter a smoothie title"
             }
@@ -75,14 +79,12 @@ export default {
        }
    },
    created() {
-       let ref = db.collection('smoothies').where('slug', '==', this.slug)
-       ref.get()
-         .then(snapshot => {
-             snapshot.forEach(doc => {
-                 this.smoothie = doc.data()
-                 this.smoothie.id = doc.id
-             })
-         })
+    fetch(`http://localhost:5000/api/v1/smoothies/${this.slug}`)
+    .then(response => response.json())
+    .then(data => {
+        this.smoothie = data
+        this.smoothie.title = data["name"]
+        })
    }
 }
 </script>

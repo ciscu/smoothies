@@ -11,7 +11,7 @@
        </ul>
      </div> 
      <span class="btn-floating btn-large halfway-fab pink">
-       <router-link :to="{ name: 'EditSmoothie', params: {smoothie_slug: smoothie.slug} }"><i class="material-icons edit">edit</i></router-link>
+       <router-link :to="{ name: 'EditSmoothie', params: {smoothie_name: smoothie.title} }"><i class="material-icons edit">edit</i></router-link>
      </span>
     </div>
   </div>
@@ -28,22 +28,32 @@ export default {
   },
   methods: {
     deleteSmoothie(id) {
-      //this.smoothies = this.smoothies.filter(smoothie => smoothie.id !== id) 
-      db.collection('smoothies').doc(id).delete()
-        .then(() => this.smoothies = this.smoothies.filter(smoothie => smoothie.id !== id))
+      fetch(`http://localhost:5000/smoothies/delete/${id}`, {
+        method: 'DELETE'
+      })
+      .then(response => response.json())
+      .then(data => {
+        this.smoothies = this.smoothies.filter(smoothie => smoothie.id !== id)
+      })
+
     }
   },
   created() {
-    // fetch data from database
-    db.collection('smoothies').get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          let smoothie = doc.data();
-          smoothie.id = doc.id
-          this.smoothies.push(smoothie)
+    fetch("http://localhost:5000/api/v1/smoothies/")
+      .then(response => response.json())
+      .then(data => data["smoothies"].forEach(smoothie => {
+        fetch(`http://localhost:5000/api/v1/smoothies/${smoothie["name"]}`)
+        .then(response => response.json())
+        .then(data => {
+          let newSmoothie = {
+            id: data["id"],
+            title: data["name"],
+            ingredients: data["ingredients"]
           }
-          )
-      })
+          this.smoothies.push(newSmoothie)
+        })
+        }
+        ))
   }
 }
 </script>

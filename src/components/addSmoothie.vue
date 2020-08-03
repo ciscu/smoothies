@@ -50,10 +50,16 @@ export default {
                     remove: /[$*_+~.()'"!\-:@]/g,
                     lower: true
                 })
-                db.collection('smoothies').add({
-                    title: this.title,
-                    ingredients: this.ingredients,
-                    slug: this.slug 
+                fetch('http://localhost:5000/api/v1/smoothies/new', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: this.title,
+                        ingredients: this.ingredients
+                    })
                 }).then(() => {
                     this.$router.push({ name: 'Index' })
                 }).catch(err => console.log(err))
