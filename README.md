@@ -1,8 +1,30 @@
 # smoothies
 
+!! Make sure to change the secret keys in `/smoothies/api-server/config.py` preferably by setting environment variable `export SECRET_KEY=<somethingSecure>` 
+
+Simple web app that uses Vue as front-end to fetch data from Flask RESTFull API backend
+
+## Back end
+
+### Create environment variables
+export FLASK_APP=app
+
+### Setup virtual environment
+python3 -m venv venv
+
+### Activate virtual environment
+. ./venv/bin/activate
+
+### Install dependencies
+pip install -r requirements
+
+### Run API server
+cd into `api-server`
+use command `flask run`
+
 > A Vue.js project
 
-## Build Setup
+## Vue Build Setup
 
 ``` bash
 # install dependencies
